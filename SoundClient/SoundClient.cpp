@@ -2,73 +2,93 @@
 #include <iostream>
 #include <conio.h> //For keyboard inputs
 
-int main()
+float Clamp(float x, float lower, float upper)
 {
-	//void* extradriverdata = 0;
-	//Common_Init(&extradriverdata);
+	return min(upper, max(x, lower));
+}
+
+int FMOD_Main()
+{
+    //Init for the command prompt screen (dimensions)
+	Common_Init(nullptr);
 
     SoundLibrary system;
+    //TODO: Do something with channels???
     SoundLibrary::Channel channel = 0;
 
     SoundLibrary::Sound sound1;
+    SoundLibrary::Sound sound2;
+    SoundLibrary::Sound sound3;
 
     //Initializes the system
     system.Initialize(32);
-    std::cout << "I'm initializing" << std::endl;
+    float volume = 1;
+    float pan = 0;
 
     //Loads audio files
     sound1 = system.Load("Media/drumloop.wav", LoadMode::STATIC);
-    std::cout << "Audio file loaded" << std::endl;
+    sound2 = system.Load("Media/jaguar.wav", LoadMode::STATIC);
+    sound3 = system.Load("Media/swish.wav", LoadMode::STATIC);	
 
-    int menuChoice = 0;
-    //TEST
+    //Main Loop
+
     do
     {
-        //Clears the screen
-        std::system("cls");
+        //Built-in function
+		Common_Update();
 
-        std::cout << "WRITING" << std::endl;
+		//Set input responses
+		if (Common_BtnPress(BTN_ACTION1)) // '1' key
+		{
+			system.Play(sound1, &channel);
+		}
 
-        while(_kbhit()) //If a keyboard key is hit...
-        {
-            wint_t key = _getwch(); //Get the key
-            //TODO: ?????
-			if (key == 0 || key == 224)
-			{
-				key = 256 + _getwch(); // Handle multi-char keys
-			}
-            //Num 1 plays sound 1
-            if(key == '1')
-            {
-                system.Play(sound1, &channel);
-            }
-        }
-        
+		if (Common_BtnPress(BTN_ACTION2)) // '2' key
+		{
+			system.Play(sound2, &channel);
+		}
 
-		/*if (key == '1')    newButtons |= (1 << BTN_ACTION1);
-		else if (key == '2')    newButtons |= (1 << BTN_ACTION2);
-		else if (key == '3')    newButtons |= (1 << BTN_ACTION3);
-		else if (key == '4')    newButtons |= (1 << BTN_ACTION4);
-		else if (key == 256 + 75) newButtons |= (1 << BTN_LEFT);
-		else if (key == 256 + 77) newButtons |= (1 << BTN_RIGHT);
-		else if (key == 256 + 72) newButtons |= (1 << BTN_UP);
-		else if (key == 256 + 80) newButtons |= (1 << BTN_DOWN);
-		else if (key == 32)     newButtons |= (1 << BTN_MORE);
-		else if (key == 27)     newButtons |= (1 << BTN_QUIT);
-		else if (key == 112)    gPaused = !gPaused;*/
+		if (Common_BtnPress(BTN_ACTION3)) // '3' key
+		{
+			system.Play(sound3, &channel);
+		}
 
-
-
-        /*if(Common_BtnPress(BTN_ACTION1))
-        {
-            system.Play(sound1, &channel);
-        }
-
-        if(Common_BtnPress(BTN_ACTION2))
+        if(Common_BtnPress(BTN_MORE)) // "Space" key
         {
             system.TogglePause(channel);
-        }*/
-    } while (true);
-    
+        }
 
+		if (Common_BtnPress(BTN_DOWN)) // "DOWN" key
+		{
+			//Makes sure that the volume is always between 0 and 1
+			volume = Clamp(volume - 0.1f, 0.f, 1.f);
+			system.SetVolume(channel, volume);
+		}
+
+        if(Common_BtnPress(BTN_UP)) // "UP" key
+        {
+            //Makes sure that the volume is always between 0 and 1
+            volume = Clamp(volume + 0.1f, 0.f, 1.f);
+            system.SetVolume(channel, volume);
+        }	
+
+        if(Common_BtnPress(BTN_LEFT)) // "LEFT" key
+        {
+            //Makes sure that the pan is always between -1 and 1
+            pan = Clamp(pan - 0.1f, -1.f, 1.f);
+            system.SetPan(channel, pan);
+        }
+
+		if (Common_BtnPress(BTN_RIGHT)) // "RIGHT" key
+		{
+			//Makes sure that the pan is always between -1 and 1
+			pan = Clamp(pan + 0.1f, -1.f, 1.f);
+			system.SetPan(channel, pan);
+		}
+
+    } while (!Common_BtnPress(BTN_QUIT)); // "ESC" key
+
+	Common_Close();
+
+	return 0;
 }

@@ -2,7 +2,7 @@
 
 #include "fmod.hpp"
 
-//#include "common.h"
+#include "common.h"
 
 
 
@@ -22,7 +22,9 @@ enum SoundMode
 
 class SoundLibrary
 {
+
 public:
+
 	//Type aliases definitions
 	using Sound = FMOD::Sound*;
 	using Channel = FMOD::Channel*;
@@ -38,9 +40,13 @@ public:
 	//Plays an audio file on the selected channel
 	void Play(Sound sound, Channel* channel);
 
+	//Toggles pause on and off on the selected channel
 	void TogglePause(Channel channel);
 
+	//Sets the volume (0 mute, 1 max volume)
+	void SetVolume(Channel channel, float volume);
 
+	void SetPan(Channel channel, float pan);
 
 
 	FMOD::System* system;

@@ -159,6 +159,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\..\..\..\..\Program Files (x86)\FMOD SoundSystem\FMOD Studio API Windows\api\core\examples\common.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\..\Program Files (x86)\FMOD SoundSystem\FMOD Studio API Windows\api\core\examples\common_platform.cpp" />
     <ClCompile Include="SoundClient.cpp" />
   </ItemGroup>
   <ItemGroup>
