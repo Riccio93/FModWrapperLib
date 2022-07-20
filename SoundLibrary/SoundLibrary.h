@@ -49,6 +49,16 @@ public:
 	void SetPan(Channel channel, float pan);
 
 
+
+
+	bool IsPlaying(Channel channel);
+
+	bool IsPaused(Channel channel);
+
+	unsigned int GetMilliseconds(Channel channel);
+
+	void Update();
+
 	FMOD::System* system;
 };
 

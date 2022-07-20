@@ -12,6 +12,8 @@ int FMOD_Main()
     //Init for the command prompt screen (dimensions)
 	Common_Init(nullptr);
 
+    SetConsoleTitleA("FMOD Wrapper Project");    
+
     SoundLibrary system;
     //TODO: Do something with channels???
     SoundLibrary::Channel channel = 0;
@@ -85,6 +87,47 @@ int FMOD_Main()
 			pan = Clamp(pan + 0.1f, -1.f, 1.f);
 			system.SetPan(channel, pan);
 		}
+
+        //TODO: Add more functionalities (especially with channels)
+
+        system.Update();
+
+
+
+
+        //PRINTING ON PROMPT
+
+        unsigned int milliseconds = 0;
+        unsigned int totalMilliseconds = 0;
+        bool bIsPlaying = false;
+        bool bIsPaused = false;
+
+		if (channel)
+		{
+			SoundLibrary::Sound currentSound = 0;
+			bIsPlaying = system.IsPlaying(channel);
+            bIsPaused = system.IsPaused(channel);
+            milliseconds = system.GetMilliseconds(channel);
+		}
+
+        Common_Draw("#################################################");
+        Common_Draw("############ FMOD WRAPPER PROJECT ###############");
+        Common_Draw("#################################################");
+        Common_Draw("");
+        Common_Draw("Press a key to perform an action:");
+        Common_Draw("");
+        Common_Draw("%s: Play the \"drumloop\" sound", Common_BtnStr(BTN_ACTION1));
+        Common_Draw("%s: Play the \"jaguar\" sound", Common_BtnStr(BTN_ACTION2));
+        Common_Draw("%s: Play the \"swish\" sound", Common_BtnStr(BTN_ACTION3));
+        Common_Draw("%s & &s: Adjust volume", Common_BtnStr(BTN_DOWN), Common_BtnStr(BTN_UP));
+        Common_Draw("%s & &s: Adjust pan", Common_BtnStr(BTN_LEFT), Common_BtnStr(BTN_RIGHT));
+        Common_Draw("%s: Quit", Common_BtnStr(BTN_QUIT));
+        Common_Draw("");
+        Common_Draw("Volume : %.1f", volume);
+        Common_Draw("Pan : %.1f", pan);
+        Common_Draw("");
+        Common_Draw("Time: %02d : %02d : %02d / %02d : %02d : %02d", milliseconds / 1000 / 60, milliseconds / 1000 % 60, milliseconds / 10 % 100, totalMilliseconds / 1000 / 60, totalMilliseconds / 1000 % 60, totalMilliseconds / 10 % 100);
+
 
     } while (!Common_BtnPress(BTN_QUIT)); // "ESC" key
 

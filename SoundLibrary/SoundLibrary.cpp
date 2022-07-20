@@ -57,3 +57,37 @@ void SoundLibrary::SetPan(Channel channel, float pan)
 	result = channel->setPan(pan);
 	ERRCHECK(result);
 }
+
+bool SoundLibrary::IsPlaying(Channel channel)
+{
+	FMOD_RESULT result;
+	bool bIsPlaying;
+	result = channel->isPlaying(&bIsPlaying);
+	ERRCHECK(result);
+	return bIsPlaying;
+}
+
+bool SoundLibrary::IsPaused(Channel channel)
+{
+	FMOD_RESULT result;
+	bool bIsPaused;
+	result = channel->getPaused(&bIsPaused);
+	ERRCHECK(result);
+	return bIsPaused;
+}
+
+unsigned int SoundLibrary::GetMilliseconds(Channel channel)
+{
+	FMOD_RESULT result;
+	unsigned int milliseconds;
+	result = channel->getPosition(&milliseconds, FMOD_TIMEUNIT_MS);
+	ERRCHECK(result);
+	return milliseconds;
+}
+
+void SoundLibrary::Update()
+{
+	FMOD_RESULT result;
+	result = system->update();
+	ERRCHECK(result);
+}
