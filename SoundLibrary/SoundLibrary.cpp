@@ -2,6 +2,7 @@
 
 FMOD_RESULT result;
 
+//Initializes the system
 void SoundLibrary::Initialize(int MaxChannelsNum)
 {
 	//Create system
@@ -42,6 +43,14 @@ void SoundLibrary::Stop(Channel channel)
 		ERRCHECK(result);
 }
 
+//Stops the audio files
+void SoundLibrary::StopAll(ChannelGroup channelGroup)
+{
+	result = channelGroup->stop();
+	if (result != FMOD_ERR_INVALID_HANDLE)
+		ERRCHECK(result);
+}
+
 //Toggles pause on and off on the selected channel
 void SoundLibrary::TogglePause(Channel channel)
 {
@@ -54,6 +63,18 @@ void SoundLibrary::TogglePause(Channel channel)
 		ERRCHECK(result);
 }
 
+//Toggles pause on and off
+void SoundLibrary::TogglePauseAll(ChannelGroup channelGroup)
+{
+	bool currentPauseValue;
+	result = channelGroup->getPaused(&currentPauseValue);
+	if (result != FMOD_ERR_INVALID_HANDLE)
+		ERRCHECK(result);
+	result = channelGroup->setPaused(!currentPauseValue);
+	if (result != FMOD_ERR_INVALID_HANDLE)
+		ERRCHECK(result);
+}
+
 //Sets the volume (0 mute, 1 max volume)
 void SoundLibrary::SetVolume(Channel channel, float volume)
 {
@@ -62,10 +83,26 @@ void SoundLibrary::SetVolume(Channel channel, float volume)
 		ERRCHECK(result);
 }
 
+//Sets the volume to the master group (0 mute, 1 max volume)
+void SoundLibrary::SetVolumeAll(ChannelGroup channelGroup, float volume)
+{
+	result = channelGroup->setVolume(volume);
+	if (result != FMOD_ERR_INVALID_HANDLE)
+		ERRCHECK(result);
+}
+
 //Sets the pan (-1 left, 0 center, 1 right)
 void SoundLibrary::SetPan(Channel channel, float pan)
 {
 	result = channel->setPan(pan);
+	if (result != FMOD_ERR_INVALID_HANDLE)
+		ERRCHECK(result);
+}
+
+//Sets the pan to the master group (-1 left, 0 center, 1 right)
+void SoundLibrary::SetPanAll(ChannelGroup channelGroup, float pan)
+{
+	result = channelGroup->setPan(pan);
 	if (result != FMOD_ERR_INVALID_HANDLE)
 		ERRCHECK(result);
 }
@@ -88,6 +125,16 @@ bool SoundLibrary::IsPaused(Channel channel)
 	if(result != FMOD_ERR_INVALID_HANDLE)
 		ERRCHECK(result);
 	return bIsPaused;
+}
+
+//Returns if the master group is paused
+bool SoundLibrary::IsGroupPaused(ChannelGroup channelGroup)
+{
+	bool bIsGroupPaused;
+	result = channelGroup->getPaused(&bIsGroupPaused);
+	if (result != FMOD_ERR_INVALID_HANDLE)
+		ERRCHECK(result);
+	return bIsGroupPaused;
 }
 
 //Gets milliseconds from the start of the audio file
@@ -127,6 +174,15 @@ int SoundLibrary::GetPlayingChannels()
 	result = system->getChannelsPlaying(&activeChannels);
 	ERRCHECK(result);
 	return activeChannels;
+}
+
+//Returns the master channel group
+SoundLibrary::ChannelGroup SoundLibrary::GetMasterChannelGroup()
+{
+	SoundLibrary::ChannelGroup masterChannelGroup;
+	result = system->getMasterChannelGroup(&masterChannelGroup);
+	ERRCHECK(result);
+	return masterChannelGroup;
 }
 
 //Calls the built-in system.Update

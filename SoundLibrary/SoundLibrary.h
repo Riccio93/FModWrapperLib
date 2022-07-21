@@ -25,6 +25,7 @@ public:
 	//Type aliases definitions
 	using Sound = FMOD::Sound*;
 	using Channel = FMOD::Channel*;
+	using ChannelGroup = FMOD::ChannelGroup*;
 
 	//Functions ------------------------------------------------------------------------
 
@@ -43,17 +44,32 @@ public:
 	//Toggles pause on and off on the selected channel
 	void TogglePause(Channel channel);
 
+	//Stops the audio files
+	void StopAll(ChannelGroup channelGroup);
+
+	//Toggles pause on and off
+	void TogglePauseAll(ChannelGroup channelGroup);
+
 	//Sets the volume (0 mute, 1 max volume)
 	void SetVolume(Channel channel, float volume);
 
+	//Sets the volume to the master group (0 mute, 1 max volume)
+	void SetVolumeAll(ChannelGroup channelGroup, float volume);
+
 	//Sets the pan (-1 left, 0 center, 1 right)
 	void SetPan(Channel channel, float pan);
+
+	//Sets the pan to the master group (-1 left, 0 center, 1 right)
+	void SetPanAll(ChannelGroup channelGroup, float pan);
 
 	//Returns if the selected channel is playing something
 	bool IsPlaying(Channel channel);
 
 	//Returns if the selected channel is paused
 	bool IsPaused(Channel channel);
+
+	//Returns if the master group is paused
+	bool IsGroupPaused(ChannelGroup channelGroup);
 
 	//Gets milliseconds from the start of the audio file
 	unsigned int GetMilliseconds(Channel channel);
@@ -66,6 +82,9 @@ public:
 
 	//Returns the number of the currently active channels
 	int GetPlayingChannels();
+
+	//Returns the master channel group
+	SoundLibrary::ChannelGroup GetMasterChannelGroup();
 
 	//Calls the built-in system.Update
 	void Update();
