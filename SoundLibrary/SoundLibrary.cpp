@@ -1,11 +1,9 @@
 #include "SoundLibrary.h"
-#include <stdexcept>
 
+FMOD_RESULT result;
 
 void SoundLibrary::Initialize(int MaxChannelsNum)
 {
-	FMOD_RESULT result;
-
 	//Create system
 	result = FMOD::System_Create(&system);
 	ERRCHECK(result);
@@ -16,9 +14,9 @@ void SoundLibrary::Initialize(int MaxChannelsNum)
 	ERRCHECK(result);
 }
 
+//Loads an audio file (STATIC or STREAMING depending on loadMode)
 SoundLibrary::Sound SoundLibrary::Load(const char* fileName, LoadMode loadMode)
 {
-	FMOD_RESULT result;
 	Sound sound;
 
 	result = system->createSound(fileName, loadMode, 0, &sound);
@@ -27,67 +25,113 @@ SoundLibrary::Sound SoundLibrary::Load(const char* fileName, LoadMode loadMode)
 	return sound;
 }
 
-void SoundLibrary::Play(Sound sound, Channel* channel)
+//Plays an audio file on the selected channel (looping depending on soundMode, ONE_SHOT or LOOP)
+void SoundLibrary::Play(Sound sound, Channel* channel, SoundMode soundMode)
 {
-	FMOD_RESULT result;
+	result = sound->setMode(soundMode);
+	ERRCHECK(result);
 	result = system->playSound(sound, 0, false, channel);
 	ERRCHECK(result);
 }
 
+//Stops the audio file on the selected channel
+void SoundLibrary::Stop(Channel channel)
+{
+	result = channel->stop();
+	if(result != FMOD_ERR_INVALID_HANDLE)
+		ERRCHECK(result);
+}
+
+//Toggles pause on and off on the selected channel
 void SoundLibrary::TogglePause(Channel channel)
 {
-	FMOD_RESULT result;
 	bool currentPauseValue;
 	result = channel->getPaused(&currentPauseValue);
-	ERRCHECK(result);
+	if(result != FMOD_ERR_INVALID_HANDLE)
+		ERRCHECK(result);
 	result = channel->setPaused(!currentPauseValue);
-	ERRCHECK(result);
+	if(result != FMOD_ERR_INVALID_HANDLE)
+		ERRCHECK(result);
 }
 
+//Sets the volume (0 mute, 1 max volume)
 void SoundLibrary::SetVolume(Channel channel, float volume)
 {
-	FMOD_RESULT result;
 	result = channel->setVolume(volume);
-	ERRCHECK(result);
+	if(result != FMOD_ERR_INVALID_HANDLE)
+		ERRCHECK(result);
 }
 
+//Sets the pan (-1 left, 0 center, 1 right)
 void SoundLibrary::SetPan(Channel channel, float pan)
 {
-	FMOD_RESULT result;
 	result = channel->setPan(pan);
-	ERRCHECK(result);
+	if (result != FMOD_ERR_INVALID_HANDLE)
+		ERRCHECK(result);
 }
 
+//Returns if the selected channel is playing something
 bool SoundLibrary::IsPlaying(Channel channel)
 {
-	FMOD_RESULT result;
 	bool bIsPlaying;
 	result = channel->isPlaying(&bIsPlaying);
-	ERRCHECK(result);
+	if(result != FMOD_ERR_INVALID_HANDLE)
+		ERRCHECK(result);
 	return bIsPlaying;
 }
 
+//Returns if the selected channel is paused
 bool SoundLibrary::IsPaused(Channel channel)
 {
-	FMOD_RESULT result;
 	bool bIsPaused;
 	result = channel->getPaused(&bIsPaused);
-	ERRCHECK(result);
+	if(result != FMOD_ERR_INVALID_HANDLE)
+		ERRCHECK(result);
 	return bIsPaused;
 }
 
+//Gets milliseconds from the start of the audio file
 unsigned int SoundLibrary::GetMilliseconds(Channel channel)
 {
-	FMOD_RESULT result;
 	unsigned int milliseconds;
 	result = channel->getPosition(&milliseconds, FMOD_TIMEUNIT_MS);
-	ERRCHECK(result);
+	if(result != FMOD_ERR_INVALID_HANDLE)
+		ERRCHECK(result);
 	return milliseconds;
 }
 
+//Gets total audio file length in milliseconds
+unsigned int SoundLibrary::GetTotalLength(Sound sound)
+{
+	unsigned int totalLength;
+	result = sound->getLength(&totalLength, FMOD_TIMEUNIT_MS);
+	if(result != FMOD_ERR_INVALID_HANDLE)
+		ERRCHECK(result);
+	return totalLength;
+}
+
+//Returns the sound currently playing on the selected channel
+SoundLibrary::Sound SoundLibrary::GetCurrentlyPlayingSound(Channel channel)
+{
+	Sound currentlyPlaying = nullptr;
+	result = channel->getCurrentSound(&currentlyPlaying);
+	if(result != FMOD_ERR_INVALID_HANDLE)
+		ERRCHECK(result);
+	return currentlyPlaying;
+}
+
+//Returns the number of the currently active channels
+int SoundLibrary::GetPlayingChannels()
+{
+	int activeChannels;
+	result = system->getChannelsPlaying(&activeChannels);
+	ERRCHECK(result);
+	return activeChannels;
+}
+
+//Calls the built-in system.Update
 void SoundLibrary::Update()
 {
-	FMOD_RESULT result;
 	result = system->update();
 	ERRCHECK(result);
 }
