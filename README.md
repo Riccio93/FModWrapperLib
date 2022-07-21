@@ -23,9 +23,10 @@ The solution is composed by two projects:
 ### Build
 
 This projects requires the FMOD Core API installed in the default path:
+
 C:\Program Files (x86)\FMOD SoundSystem\FMOD Studio API Windows\api\core
 
-To run it build using SoundClient as Startup Project.
+Compile it using SoundClient as Startup Project.
 
 ### Pre-compiled executable
 
